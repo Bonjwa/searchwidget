@@ -1,0 +1,89 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Search Widget | Sample | ArcGIS Maps SDK for JavaScript 4.16</title>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.16/"></script>
+
+    <script>
+        require(["esri/Map", "esri/views/SceneView", "esri/widgets/Search", "esri/widgets/Search/LocatorSearchSource", "esri/tasks/Locator"], (Map, SceneView, Search, LocatorSearchSource, Locator) => {
+            const map = new Map({
+                basemap: "satellite",
+                ground: "world-elevation"
+            });
+            const view = new SceneView({
+                scale: 123456789,
+                container: "viewDiv",
+                map: map
+            });
+            let locatorURL = "https://gisent.greatersudbury.ca/server/rest/services/Geocode/gisdb2mrole_v4r2/GeocodeServer"
+            const customSearchSource = new LocatorSearchSource({
+                locator: new Locator({ url: locatorURL }),
+                // getSuggestions: function (params) {
+                //     // You can request data from a
+                //     // third-party source to find some
+                //     // suggestions with provided suggestTerm
+                //     // the user types in the Search widget
+                //     return esriRequest(locatorURL + "/findAddressCandidates", {
+                //         query: {
+                //             SingleLine: params.suggestTerm.replace(/ /g, " "),
+                //             limit: 6,
+                //             f: 'pjson',
+                //             lat: view.center.latitude,
+                //             lon: view.center.longitude
+                //         },
+                //         responseType: "json"
+                //     }).then(function (results) {
+                //         // Return Suggestion results to display
+                //         // in the Search widget
+                //         return results.data.candidates.map(function (candidate) {
+                //             return {
+                //                 // key: "name",  
+                //                 text: candidate.address,
+                //                 sourceIndex: params.sourceIndex
+                //             };
+                //         });
+                //     });
+                // },
+                singleLineFieldName: "SingleLine",
+                name: "Custom Geocoding Service",
+                placeholder: "Search Geocoder",
+                maxResults: 3,
+                maxSuggestions: 6,
+                suggestionsEnabled: true,
+                minSuggestCharacters: 0//,
+            })
+            const searchWidget = new Search({
+                view: view,
+                sources: [customSearchSource],
+                includeDefaultSources: false,
+                maxResults: 8,
+                maxSuggestions: 8,
+            });
+            // Add the search widget to the top right corner of the view
+            view.ui.add(searchWidget, {
+                position: "top-right"
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+</body>
+
+</html>
